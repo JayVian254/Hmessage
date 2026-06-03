@@ -2,10 +2,33 @@
   "use strict";
 
   const STORAGE_KEY = "fakeMessenger_chats";
-  const NON_REPLY_SENDERS = [
-    "mpesa", "safaricom", "m-pesa", "m‑pesa", "lipa na m-pesa", "equity", "kcb",
-    "co-operative bank", "airtel money", "tkash"
+
+  // ---------- Organization helpers (same as app.js) ----------
+  const ORGANIZATIONS = [
+    "mpesa", "m-pesa", "safaricom", "airtel",
+    "equity", "kcb", "co-operative bank",
+    "netflix", "google"
   ];
+
+  function isOrganization(name) {
+    const lower = name.toLowerCase();
+    return ORGANIZATIONS.some(org => lower.includes(org));
+  }
+
+  // Expanded color palette (more unique colors)
+  const ORG_COLORS = [
+    "#F4C430", "#4CAF50", "#FF9800", "#2196F3",
+    "#9C27B0", "#E91E63", "#00BCD4", "#FF5722",
+    "#795548", "#607D8B", "#CDDC39", "#FFC107"
+  ];
+
+  function getOrgColor(name) {
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+      hash += name.charCodeAt(i);
+    }
+    return ORG_COLORS[hash % ORG_COLORS.length];
+  }
 
   // ---------- DOM Elements ----------
   const backBtn = document.getElementById("backBtn");
@@ -28,7 +51,7 @@
 
   // Long‑press handling
   let longPressTimer = null;
-  let ignoreNextClick = false;   // prevents immediate close after long‑press
+  let ignoreNextClick = false;
 
   // ---------- Helpers ----------
   function getChats() {
@@ -42,11 +65,6 @@
 
   function saveChats(chats) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(chats));
-  }
-
-  function isNonReplySender(name) {
-    const lower = name.toLowerCase().trim();
-    return NON_REPLY_SENDERS.some(prefix => lower.includes(prefix));
   }
 
   // ---------- Render messages ----------
@@ -90,7 +108,7 @@
       bubble.appendChild(meta);
       row.appendChild(bubble);
 
-      // Attach long‑press listeners directly to the bubble
+      // Long‑press listeners
       bubble.addEventListener("pointerdown", (e) => {
         e.stopPropagation();
         selectedMessageIndex = index;
@@ -107,7 +125,6 @@
       messageList.appendChild(row);
     });
 
-    // Auto‑scroll to bottom
     messageList.scrollTop = messageList.scrollHeight;
   }
 
@@ -117,7 +134,7 @@
   }
 
   function openMessageContextBar() {
-    ignoreNextClick = true;   // prevent immediate close from the up‑coming click
+    ignoreNextClick = true;
     contextBar.classList.add("active");
     contextBackdrop.classList.add("visible");
   }
@@ -162,10 +179,23 @@
       return;
     }
 
+    // Header
     chatNameEl.textContent = currentChat.name;
-    headerAvatar.textContent = currentChat.name.charAt(0).toUpperCase();
 
-    if (isNonReplySender(currentChat.name)) {
+    // Avatar: organization icon or first letter
+    const isOrg = isOrganization(currentChat.name);
+    if (isOrg) {
+      headerAvatar.innerHTML = '<span class="org-icon">👤</span>';
+      headerAvatar.classList.add("organization");
+      headerAvatar.style.background = getOrgColor(currentChat.name);
+    } else {
+      headerAvatar.textContent = currentChat.name.charAt(0).toUpperCase();
+      headerAvatar.classList.remove("organization");
+      headerAvatar.style.background = ""; // reset to CSS default
+    }
+
+    // Footer: reply box or non-reply notice
+    if (isOrg) {
       replyBox.style.display = "none";
       noReplyNotice.style.display = "block";
     } else {
@@ -228,22 +258,16 @@
   contextBackdrop.addEventListener("click", closeMessageContextBar);
 
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") {
-      closeMessageContextBar();
-    }
+    if (e.key === "Escape") closeMessageContextBar();
   });
 
-  // Handle clicks on the message list – only close if bar is open AND it was not the long‑press release
   messageList.addEventListener("click", (e) => {
     if (!contextBar.classList.contains("active")) return;
     if (ignoreNextClick) {
       ignoreNextClick = false;
       return;
     }
-    // Close if tap is outside the context bar
-    if (!e.target.closest(".message-context-bar")) {
-      closeMessageContextBar();
-    }
+    if (!e.target.closest(".message-context-bar")) closeMessageContextBar();
   });
 
   // ---------- Initialise ----------
