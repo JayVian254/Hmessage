@@ -24,12 +24,16 @@
   --font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
 body {
   background: var(--bg-primary);
   color: var(--text-primary);
   font-family: var(--font-family);
   line-height: 1.4;
-  min-height: 100vh;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -37,11 +41,11 @@ body {
   max-width: 480px;
   margin: 0 auto;
   background: var(--bg-primary);
-  min-height: 100vh;
+  height: 100%;
   display: flex;
   flex-direction: column;
   box-shadow: 0 0 12px rgba(0,0,0,0.5);
-  position: relative;           /* for context bar positioning */
+  position: relative;   /* for context bar positioning */
 }
 
 /* --- Header --- */
@@ -57,6 +61,7 @@ body {
   top: 0;
   z-index: 10;
   gap: 12px;
+  flex-shrink: 0;   /* prevent header from shrinking */
 }
 
 #backBtn {
@@ -108,13 +113,11 @@ body {
 /* --- Messages --- */
 .message-list {
   flex: 1;
-  padding: 16px 12px;
   overflow-y: auto;
+  padding: 16px 12px 80px;   /* bottom padding for footer breathing room */
   display: flex;
   flex-direction: column;
   gap: 4px;
-  /* bottom spacing so messages aren't hidden behind the fixed footer */
-  padding-bottom: 80px;
 }
 
 .message-row {
@@ -136,8 +139,8 @@ body {
   border-radius: var(--radius-lg);
   position: relative;
   word-wrap: break-word;
-  cursor: pointer;   /* indicate long‑press possible */
-  user-select: none; /* prevent accidental selection */
+  cursor: pointer;
+  user-select: none;
 }
 
 .message-row.incoming .message-bubble {
@@ -201,7 +204,6 @@ body {
   align-items: flex-end;
   gap: 8px;
   border-top: 1px solid var(--border-color);
-  /* stick to bottom naturally in flex column */
   flex-shrink: 0;
 }
 
@@ -262,7 +264,7 @@ body {
 /* ========== Message context bar (for long press) ========== */
 .message-context-bar {
   position: fixed;
-  bottom: -100px;               /* hidden off‑screen */
+  bottom: -100px;
   left: 0;
   right: 0;
   max-width: 480px;
