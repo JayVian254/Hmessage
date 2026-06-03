@@ -507,3 +507,14 @@ body.dark-mode-enhanced {
 .muted {
   opacity: 0.7;
 }
+
+/* Organization avatar */
+.avatar.organization {
+  font-size: 20px;        /* icon size */
+  font-weight: normal;
+  background: #2196F3;    /* fallback, overridden by inline style */
+}
+
+.org-icon {
+  font-size: 22px;
+}
