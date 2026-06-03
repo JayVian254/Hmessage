@@ -3,33 +3,37 @@
 
   const STORAGE_KEY = "fakeMessenger_chats";
 
+  // ---------- Organization helpers ----------
   const ORGANIZATIONS = [
-  "mpesa",
-  "m-pesa",
-  "safaricom",
-  "airtel",
-  "equity",
-  "kcb",
-  "co-operative bank",
-  "netflix",
-  "google"
-];
+    "mpesa", "m-pesa", "safaricom", "airtel",
+    "equity", "kcb", "co-operative bank",
+    "netflix", "google"
+  ];
 
-function isOrganization(name) {
-  const lower = name.toLowerCase();
+  function isOrganization(name) {
+    const lower = name.toLowerCase();
+    return ORGANIZATIONS.some(org => lower.includes(org));
+  }
 
-  return ORGANIZATIONS.some(org =>
-    lower.includes(org)
-  );
-}
+  const ORG_COLORS = [
+    "#F4C430", "#4CAF50", "#FF9800",
+    "#2196F3", "#9C27B0", "#E91E63"
+  ];
 
+  function getOrgColor(name) {
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+      hash += name.charCodeAt(i);
+    }
+    return ORG_COLORS[hash % ORG_COLORS.length];
+  }
+
+  // ---------- Default chats ----------
   const DEFAULT_CHATS = [
     {
       id: "c1",
       name: "Alex",
-      pinned: false,
-      muted: false,
-      archived: false,
+      pinned: false, muted: false, archived: false,
       messages: [
         { text: "Hey", direction: "incoming", state: "read", time: "9:38 PM" },
         { text: "Where are you?", direction: "incoming", state: "delivered", time: "9:41 PM" }
@@ -38,9 +42,7 @@ function isOrganization(name) {
     {
       id: "c2",
       name: "Sarah",
-      pinned: true,
-      muted: false,
-      archived: false,
+      pinned: true, muted: false, archived: false,
       messages: [
         { text: "Typing later?", direction: "incoming", state: "read", time: "8:12 PM" }
       ]
@@ -48,9 +50,7 @@ function isOrganization(name) {
     {
       id: "c3",
       name: "Mike",
-      pinned: false,
-      muted: false,
-      archived: false,
+      pinned: false, muted: false, archived: false,
       messages: [
         { text: "See you tomorrow", direction: "incoming", state: "read", time: "Yesterday" }
       ]
@@ -140,7 +140,6 @@ function isOrganization(name) {
           this.closeDrawer();
           this.closeModal();
           this.closeContextMenu();
-          // also exit selection mode
           if (this.selectionMode) {
             this.clearSelection();
             this.render();
@@ -149,12 +148,10 @@ function isOrganization(name) {
       });
 
       const searchForm = document.querySelector(".search-box");
-      // Triple tap secret mode
       if (this.appTitle) {
         this.appTitle.addEventListener("click", this.handleSecretTap.bind(this));
       }
 
-      // Long press handling
       if (this.chatList) {
         this.chatList.addEventListener("pointerdown", (e) => {
           const item = e.target.closest(".chat-item");
@@ -172,16 +169,10 @@ function isOrganization(name) {
           }, 500);
         });
 
-        this.chatList.addEventListener("pointerup", () => {
-          clearTimeout(this.longPressTimer);
-        });
-
-        this.chatList.addEventListener("pointerleave", () => {
-          clearTimeout(this.longPressTimer);
-        });
+        this.chatList.addEventListener("pointerup", () => clearTimeout(this.longPressTimer));
+        this.chatList.addEventListener("pointerleave", () => clearTimeout(this.longPressTimer));
       }
 
-      // Context menu buttons
       this.pinBtn?.addEventListener("click", () => this.togglePin());
       this.unreadBtn?.addEventListener("click", () => this.markUnread());
       this.muteBtn?.addEventListener("click", () => this.toggleMute());
@@ -189,13 +180,10 @@ function isOrganization(name) {
       this.deleteBtn?.addEventListener("click", () => this.deleteChat());
       this.contextBackdrop?.addEventListener("click", () => this.closeContextMenu());
 
-      if (searchForm) {
-        searchForm.addEventListener("submit", (e) => e.preventDefault());
-      }
+      if (searchForm) searchForm.addEventListener("submit", (e) => e.preventDefault());
 
       this.render();
 
-      // Search
       if (this.searchInput) {
         this.searchInput.addEventListener("input", this.handleSearch);
         this.searchInput.addEventListener("keydown", (e) => {
@@ -208,38 +196,13 @@ function isOrganization(name) {
         });
       }
 
-      // Hamburger toggle
-      if (this.hamburgerBtn) {
-        this.hamburgerBtn.addEventListener("click", this.toggleDrawer);
-      }
-      if (this.drawerBackdrop) {
-        this.drawerBackdrop.addEventListener("click", this.closeDrawer);
-      }
-
-      // More button
-      if (this.moreBtn) {
-        this.moreBtn.addEventListener("click", this.showMoreOptions);
-      }
-
-      // Chat list delegation
-      if (this.chatList) {
-        this.chatList.addEventListener("click", this.handleChatClick);
-      }
-
-      // FAB opens modal
-      if (this.fab) {
-        this.fab.addEventListener("click", this.openModal);
-      }
-
-      // Modal buttons
-      if (this.cancelAddBtn) {
-        this.cancelAddBtn.addEventListener("click", this.closeModal);
-      }
-      if (this.confirmAddBtn) {
-        this.confirmAddBtn.addEventListener("click", this.confirmAdd);
-      }
-
-      // Close modal on overlay click
+      if (this.hamburgerBtn) this.hamburgerBtn.addEventListener("click", this.toggleDrawer);
+      if (this.drawerBackdrop) this.drawerBackdrop.addEventListener("click", this.closeDrawer);
+      if (this.moreBtn) this.moreBtn.addEventListener("click", this.showMoreOptions);
+      if (this.chatList) this.chatList.addEventListener("click", this.handleChatClick);
+      if (this.fab) this.fab.addEventListener("click", this.openModal);
+      if (this.cancelAddBtn) this.cancelAddBtn.addEventListener("click", this.closeModal);
+      if (this.confirmAddBtn) this.confirmAddBtn.addEventListener("click", this.confirmAdd);
       if (this.addModal) {
         this.addModal.addEventListener("click", (e) => {
           if (e.target === this.addModal) this.closeModal();
@@ -247,7 +210,6 @@ function isOrganization(name) {
       }
     }
 
-    // ---------- Search ----------
     handleSearch(e) {
       this.activeFilter = e.target.value;
       this.render();
@@ -256,20 +218,17 @@ function isOrganization(name) {
     getFilteredChats() {
       const filter = this.activeFilter.trim().toLowerCase();
       let chats = this.chats.filter(chat => !chat.archived);
-
       if (filter) {
         chats = chats.filter(chat =>
           chat.name.toLowerCase().includes(filter) ||
           (chat.messages?.[chat.messages.length - 1]?.text || "").toLowerCase().includes(filter)
         );
       }
-
       chats.sort((a, b) => {
         if (a.pinned && !b.pinned) return -1;
         if (!a.pinned && b.pinned) return 1;
         return 0;
       });
-
       return chats;
     }
 
@@ -283,17 +242,17 @@ function isOrganization(name) {
       return chat.messages.filter(msg => msg.direction === "incoming" && msg.state !== "read").length;
     }
 
-    // ---------- Render ----------
     render() {
       if (!this.chatList) return;
-
       const filtered = this.getFilteredChats();
       const fragment = document.createDocumentFragment();
 
       filtered.forEach((chat, index) => {
-        const avatarContent = isOrganization(chat.name)
-        ? '<span class="org-icon">👤</span>'
-        : chat.name.charAt(0).toUpperCase();
+        const isOrg = isOrganization(chat.name);
+        const avatarContent = isOrg
+          ? '<span class="org-icon">👤</span>'
+          : chat.name.charAt(0).toUpperCase();
+
         const lastMessage = this.getLastMessage(chat);
         const previewText = lastMessage?.text || "No messages";
         const previewTime = lastMessage?.time || "";
@@ -309,13 +268,9 @@ function isOrganization(name) {
         chatItem.setAttribute("tabindex", "0");
 
         chatItem.innerHTML = `
-          <div class="avatar ${
-  isOrganization(chat.name)
-    ? "organization"
-    : ""
-}">
-  ${avatarContent}
-</div>
+          <div class="avatar${isOrg ? " organization" : ""}">
+            ${avatarContent}
+          </div>
           <div class="chat-info">
             <div class="chat-top">
               <div class="chat-name">${this.escapeHTML(chat.name)}</div>
@@ -325,6 +280,12 @@ function isOrganization(name) {
           </div>
           ${unreadCount > 0 ? `<div class="unread">${unreadCount}</div>` : ""}
         `;
+
+        // Apply organization‑specific background color to the avatar
+        if (isOrg) {
+          const avatarEl = chatItem.querySelector(".avatar");
+          avatarEl.style.background = getOrgColor(chat.name);
+        }
 
         if (window.CSS && CSS.supports("animation", "fadeInUp 0.4s ease")) {
           chatItem.style.animation = `fadeInUp 0.3s ease ${index * 0.05}s both`;
@@ -354,30 +315,24 @@ function isOrganization(name) {
         chatItem.dataset.longPressed = "false";
         return;
       }
-
       const chatId = chatItem.dataset.chatId;
       const chat = this.chats.find(c => c.id === chatId);
       if (!chat) return;
 
-      // Selection mode
       if (this.selectionMode) {
         if (this.selectedChats.has(chatId)) {
           this.selectedChats.delete(chatId);
         } else {
           this.selectedChats.add(chatId);
         }
-        if (this.selectedChats.size === 0) {
-          this.selectionMode = false;
-        }
+        if (this.selectedChats.size === 0) this.selectionMode = false;
         this.render();
         return;
       }
 
-      // Open conversation page (future)
       window.location.href = `chat.html?id=${chatId}`;
     }
 
-    // ---------- Drawer ----------
     toggleDrawer() {
       this.sideDrawer.classList.toggle("open");
       this.drawerBackdrop.classList.toggle("visible");
@@ -392,7 +347,6 @@ function isOrganization(name) {
       console.log("More options toggled");
     }
 
-    // ---------- Add Contact Modal ----------
     openModal() {
       this.addModal.classList.add("active");
       this.newName.focus();
@@ -405,15 +359,11 @@ function isOrganization(name) {
     }
     confirmAdd() {
       const name = this.newName.value.trim();
-      if (!name) {
-        alert("Name is required");
-        return;
-      }
+      if (!name) { alert("Name is required"); return; }
       const message = this.newMessage.value.trim() || "Hey there!";
       const unread = parseInt(this.newUnread.value, 10) || 0;
       const now = new Date();
       const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
       this.addChat(name, message, time, unread);
       this.closeModal();
     }
@@ -421,54 +371,28 @@ function isOrganization(name) {
     addChat(name, message, time, unread = 0) {
       const id = "c" + Date.now() + Math.random().toString(36).substring(2, 11);
       const messages = [];
-
-      // If unread > 0, create that many unread (delivered) messages
       for (let i = 0; i < unread; i++) {
-        messages.push({
-          text: message,
-          direction: "incoming",
-          state: "delivered",
-          time
-        });
+        messages.push({ text: message, direction: "incoming", state: "delivered", time });
       }
-      // If no unread, create one read message
       if (unread === 0) {
-        messages.push({
-          text: message,
-          direction: "incoming",
-          state: "read",
-          time
-        });
+        messages.push({ text: message, direction: "incoming", state: "read", time });
       }
-
-      const newChat = {
-        id,
-        name,
-        pinned: false,
-        muted: false,
-        archived: false,
-        messages
-      };
+      const newChat = { id, name, pinned: false, muted: false, archived: false, messages };
       this.chats.unshift(newChat);
       saveChats(this.chats);
       this.render();
     }
 
-    // ---------- Secret Triple Tap ----------
     handleSecretTap() {
       this.tapCount++;
       clearTimeout(this.tapTimer);
-      this.tapTimer = setTimeout(() => {
-        this.tapCount = 0;
-      }, 600);
-
+      this.tapTimer = setTimeout(() => { this.tapCount = 0; }, 600);
       if (this.tapCount === 3) {
         this.tapCount = 0;
         window.location.href = "injector.html";
       }
     }
 
-    // ---------- Context Menu ----------
     openContextMenu() {
       this.contextMenu?.classList.add("active");
       this.contextBackdrop?.classList.add("visible");
@@ -478,22 +402,18 @@ function isOrganization(name) {
       this.contextBackdrop?.classList.remove("visible");
     }
 
-    // ---------- Chat Actions ----------
     togglePin() {
-      this.chats.forEach(chat => {
-        if (this.selectedChats.has(chat.id)) chat.pinned = !chat.pinned;
-      });
+      this.chats.forEach(chat => { if (this.selectedChats.has(chat.id)) chat.pinned = !chat.pinned; });
       saveChats(this.chats);
       this.clearSelection();
       this.closeContextMenu();
       this.render();
     }
-
     markUnread() {
       this.chats.forEach(chat => {
         if (this.selectedChats.has(chat.id)) {
-          const lastMessage = chat.messages?.[chat.messages.length - 1];
-          if (lastMessage) lastMessage.state = "delivered";
+          const last = chat.messages?.[chat.messages.length - 1];
+          if (last) last.state = "delivered";
         }
       });
       saveChats(this.chats);
@@ -501,27 +421,20 @@ function isOrganization(name) {
       this.closeContextMenu();
       this.render();
     }
-
     toggleMute() {
-      this.chats.forEach(chat => {
-        if (this.selectedChats.has(chat.id)) chat.muted = !chat.muted;
-      });
+      this.chats.forEach(chat => { if (this.selectedChats.has(chat.id)) chat.muted = !chat.muted; });
       saveChats(this.chats);
       this.clearSelection();
       this.closeContextMenu();
       this.render();
     }
-
     archiveChat() {
-      this.chats.forEach(chat => {
-        if (this.selectedChats.has(chat.id)) chat.archived = true;
-      });
+      this.chats.forEach(chat => { if (this.selectedChats.has(chat.id)) chat.archived = true; });
       saveChats(this.chats);
       this.clearSelection();
       this.closeContextMenu();
       this.render();
     }
-
     deleteChat() {
       this.chats = this.chats.filter(chat => !this.selectedChats.has(chat.id));
       saveChats(this.chats);
@@ -546,41 +459,3 @@ function isOrganization(name) {
     window.chatApp = new ChatApp();
   });
 })();
-
-function getOrgColor(name) {
-
-  let hash = 0;
-
-  for (let i = 0; i < name.length; i++) {
-    hash += name.charCodeAt(i);
-  }
-
-  return ORG_COLORS[
-    hash % ORG_COLORS.length
-  ];
-}if (isOrganization(chat.name)) {
-
-  chatItem
-    .querySelector(".avatar")
-    .style.background =
-      getOrgColor(chat.name);
-
-}function getOrgColor(name) {
-
-  let hash = 0;
-
-  for (let i = 0; i < name.length; i++) {
-    hash += name.charCodeAt(i);
-  }
-
-  return ORG_COLORS[
-    hash % ORG_COLORS.length
-  ];
-}const ORG_COLORS = [
-  "#F4C430",
-  "#4CAF50",
-  "#FF9800",
-  "#2196F3",
-  "#9C27B0",
-  "#E91E63"
-];
