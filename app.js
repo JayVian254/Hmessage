@@ -1,9 +1,10 @@
+
 (function () {
   "use strict";
 
   const STORAGE_KEY = "fakeMessenger_chats";
 
-  // ---------- Organization helpers ----------
+  // ---------- Organization helpers (same as chat.js) ----------
   const ORGANIZATIONS = [
     "mpesa", "m-pesa", "safaricom", "airtel",
     "equity", "kcb", "co-operative bank",
@@ -15,9 +16,11 @@
     return ORGANIZATIONS.some(org => lower.includes(org));
   }
 
+  // Expanded color palette (12 distinct colors)
   const ORG_COLORS = [
-    "#F4C430", "#4CAF50", "#FF9800",
-    "#2196F3", "#9C27B0", "#E91E63"
+    "#F4C430", "#4CAF50", "#FF9800", "#2196F3",
+    "#9C27B0", "#E91E63", "#00BCD4", "#FF5722",
+    "#795548", "#607D8B", "#CDDC39", "#FFC107"
   ];
 
   function getOrgColor(name) {
