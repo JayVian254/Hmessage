@@ -291,7 +291,9 @@ function isOrganization(name) {
       const fragment = document.createDocumentFragment();
 
       filtered.forEach((chat, index) => {
-        const firstLetter = chat.name.charAt(0);
+        const avatarContent = isOrganization(chat.name)
+        ? '<span class="org-icon">👤</span>'
+        : chat.name.charAt(0).toUpperCase();
         const lastMessage = this.getLastMessage(chat);
         const previewText = lastMessage?.text || "No messages";
         const previewTime = lastMessage?.time || "";
@@ -307,7 +309,13 @@ function isOrganization(name) {
         chatItem.setAttribute("tabindex", "0");
 
         chatItem.innerHTML = `
-          <div class="avatar">${firstLetter}</div>
+          <div class="avatar ${
+  isOrganization(chat.name)
+    ? "organization"
+    : ""
+}">
+  ${avatarContent}
+</div>
           <div class="chat-info">
             <div class="chat-top">
               <div class="chat-name">${this.escapeHTML(chat.name)}</div>
@@ -538,3 +546,41 @@ function isOrganization(name) {
     window.chatApp = new ChatApp();
   });
 })();
+
+function getOrgColor(name) {
+
+  let hash = 0;
+
+  for (let i = 0; i < name.length; i++) {
+    hash += name.charCodeAt(i);
+  }
+
+  return ORG_COLORS[
+    hash % ORG_COLORS.length
+  ];
+}if (isOrganization(chat.name)) {
+
+  chatItem
+    .querySelector(".avatar")
+    .style.background =
+      getOrgColor(chat.name);
+
+}function getOrgColor(name) {
+
+  let hash = 0;
+
+  for (let i = 0; i < name.length; i++) {
+    hash += name.charCodeAt(i);
+  }
+
+  return ORG_COLORS[
+    hash % ORG_COLORS.length
+  ];
+}const ORG_COLORS = [
+  "#F4C430",
+  "#4CAF50",
+  "#FF9800",
+  "#2196F3",
+  "#9C27B0",
+  "#E91E63"
+];
