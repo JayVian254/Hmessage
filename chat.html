@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="theme-color" content="#0084ff" />
+  <title>Chat – Fake Messenger</title>
+  <link rel="stylesheet" href="chat.css" />
+</head>
+<body>
+  <div class="chat-app">
+    <header class="chat-header">
+      <button id="backBtn" aria-label="Back to chats">←</button>
+      <div class="header-info">
+        <div class="header-avatar" id="headerAvatar"></div>
+        <h2 id="chatName">Contact</h2>
+      </div>
+    </header>
+
+    <main class="message-list" id="messageList"></main>
+
+    <!-- Normal reply box (visible only when allowed) -->
+    <div class="reply-box" id="replyBox">
+      <textarea
+        id="messageInput"
+        placeholder="Type a message…"
+        rows="1"
+        aria-label="Message"
+      ></textarea>
+      <button id="sendBtn" aria-label="Send message">
+        <span aria-hidden="true">➤</span>
+      </button>
+    </div>
+
+    <!-- Non-reply notice (shown for MPESA, Safaricom, etc.) -->
+    <div class="no-reply" id="noReplyNotice" style="display:none;">
+      <p>Sender can't accept replies. Contact them directly.</p>
+    </div>
+  </div>
+
+  <script src="chat.js"></script>
+</body>
+</html>
