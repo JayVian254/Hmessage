@@ -41,6 +41,7 @@ body {
   display: flex;
   flex-direction: column;
   box-shadow: 0 0 12px rgba(0,0,0,0.5);
+  position: relative;           /* for context bar positioning */
 }
 
 /* --- Header --- */
@@ -112,6 +113,8 @@ body {
   display: flex;
   flex-direction: column;
   gap: 4px;
+  /* bottom spacing so messages aren't hidden behind the fixed footer */
+  padding-bottom: 80px;
 }
 
 .message-row {
@@ -133,6 +136,8 @@ body {
   border-radius: var(--radius-lg);
   position: relative;
   word-wrap: break-word;
+  cursor: pointer;   /* indicate long‑press possible */
+  user-select: none; /* prevent accidental selection */
 }
 
 .message-row.incoming .message-bubble {
@@ -170,7 +175,6 @@ body {
   font-size: 0.75rem;
 }
 
-/* Delivery state icons */
 .state-sent::after {
   content: "✓";
 }
@@ -179,7 +183,7 @@ body {
 }
 .state-read::after {
   content: "✓✓";
-  color: #34b7f1; /* blue double tick */
+  color: #34b7f1;
 }
 
 /* Empty / loading */
@@ -197,6 +201,8 @@ body {
   align-items: flex-end;
   gap: 8px;
   border-top: 1px solid var(--border-color);
+  /* stick to bottom naturally in flex column */
+  flex-shrink: 0;
 }
 
 .reply-box textarea {
@@ -250,6 +256,58 @@ body {
   color: var(--text-secondary);
   font-style: italic;
   font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+/* ========== Message context bar (for long press) ========== */
+.message-context-bar {
+  position: fixed;
+  bottom: -100px;               /* hidden off‑screen */
+  left: 0;
+  right: 0;
+  max-width: 480px;
+  margin: 0 auto;
+  background: #1d1d1d;
+  border-radius: 24px 24px 0 0;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 70;
+  transition: bottom 0.25s ease;
+}
+
+.message-context-bar.active {
+  bottom: 0;
+}
+
+.message-context-bar button {
+  background: rgba(255,255,255,0.06);
+  border: none;
+  color: white;
+  padding: 16px;
+  border-radius: 14px;
+  text-align: left;
+  font-size: 15px;
+  cursor: pointer;
+}
+.message-context-bar button:hover {
+  background: rgba(255,255,255,0.12);
+}
+
+/* Backdrop for context bar */
+.context-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 60;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+.context-backdrop.visible {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 /* ========== Focus ========== */
