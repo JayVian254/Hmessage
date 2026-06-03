@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="Fake Messenger – a sleek and accessible chat interface" />
+  <meta name="theme-color" content="#0084ff" />
+  <title>Fake Messenger</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💬</text></svg>" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div class="app">
+
+    <!-- HEADER with hamburger, title, and more button (no search button) -->
+    <header class="topbar" role="banner">
+      <button class="hamburger" id="hamburgerBtn" aria-label="Open menu">
+        <span aria-hidden="true">☰</span>
+      </button>
+      <h1 id="app-title">Messages</h1>
+      <nav class="top-icons" aria-label="Toolbar">
+        <button type="button" aria-label="More options" class="icon-btn more-btn">
+          <span aria-hidden="true">⋮</span>
+        </button>
+      </nav>
+    </header>
+
+    <!-- Side drawer (hidden by default) -->
+    <aside class="side-drawer" id="sideDrawer">
+      <div class="drawer-content">
+        <h2 class="drawer-title">Menu</h2>
+        <button class="drawer-btn">Settings</button>
+        <button class="drawer-btn">About</button>
+        <button class="drawer-btn">Logout</button>
+      </div>
+    </aside>
+    <div class="drawer-backdrop" id="drawerBackdrop"></div>
+    <div class="context-backdrop" id="contextBackdrop"></div>
+
+    <div class="context-menu" id="contextMenu">
+      <button id="pinChatBtn">📌 Pin</button>
+      <button id="markUnreadBtn">✉️ Mark unread</button>
+      <button id="muteChatBtn">🔕 Mute</button>
+      <button id="archiveChatBtn">🗃️ Archive</button>
+      <button id="deleteChatBtn">🗑️ Delete</button>
+    </div>
+
+    <!-- Main content area -->
+    <main id="main-content">
+
+      <!-- Search bar (no extra button, just input) -->
+      <form class="search-box" role="search" aria-label="Search chats">
+        <input 
+          type="search" 
+          id="search-input"
+          name="q"
+          placeholder="Search chats…"
+          aria-label="Search chats"
+          autocomplete="off"
+        />
+      </form>
+
+      <!-- Chat list -->
+      <section aria-labelledby="app-title">
+        <ul class="chat-list" id="chatList" aria-label="Chat conversations"></ul>
+      </section>
+
+    </main>
+
+    <!-- Floating Action Button -->
+    <button class="fab" id="addContactBtn" aria-label="Add new contact" title="Add contact">
+      <span aria-hidden="true">+</span>
+    </button>
+
+    <!-- Add Contact Modal (hidden by default) -->
+    <div class="modal-overlay" id="addModal">
+      <div class="modal-content">
+        <h3>New Contact</h3>
+        <label for="newName">Name</label>
+        <input type="text" id="newName" placeholder="Contact name" />
+        <label for="newMessage">Message</label>
+        <input type="text" id="newMessage" placeholder="Hey there!" />
+        <label for="newUnread">Unread</label>
+        <input type="number" id="newUnread" min="0" value="0" />
+        <div class="modal-actions">
+          <button id="cancelAddBtn" class="btn-cancel">Cancel</button>
+          <button id="confirmAddBtn" class="btn-confirm">Add</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
