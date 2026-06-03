@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Message Injector</title>
+  <link rel="stylesheet" href="injector.css">
+</head>
+<body>
+  <div class="injector-app">
+    <header class="topbar">
+      <button id="backBtn">←</button>
+      <h1>Fake Message Injector</h1>
+    </header>
+    <main class="injector-container">
+      <div class="field">
+        <label>Contact</label>
+        <select id="contactSelect"></select>
+      </div>
+      <div class="field">
+        <label>Message</label>
+        <textarea id="messageInput" placeholder="Type fake message..."></textarea>
+      </div>
+      <div class="field">
+        <label>Direction</label>
+        <div class="radio-group">
+          <label>
+            <input type="radio" name="direction" value="incoming" checked />
+            Incoming
+          </label>
+          <label>
+            <input type="radio" name="direction" value="outgoing" />
+            Outgoing
+          </label>
+        </div>
+      </div>
+      <div class="field">
+        <label>State</label>
+        <select id="stateSelect">
+          <option value="sent">Sent</option>
+          <option value="delivered">Delivered</option>
+          <option value="read">Read</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Time</label>
+        <input type="text" id="timeInput" placeholder="9:41 PM" />
+      </div>
+      <button id="injectBtn">Inject Message</button>
+    </main>
+  </div>
+  <script src="injector.js"></script>
+</body>
+</html>
