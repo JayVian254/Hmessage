@@ -3,6 +3,26 @@
 
   const STORAGE_KEY = "fakeMessenger_chats";
 
+  const ORGANIZATIONS = [
+  "mpesa",
+  "m-pesa",
+  "safaricom",
+  "airtel",
+  "equity",
+  "kcb",
+  "co-operative bank",
+  "netflix",
+  "google"
+];
+
+function isOrganization(name) {
+  const lower = name.toLowerCase();
+
+  return ORGANIZATIONS.some(org =>
+    lower.includes(org)
+  );
+}
+
   const DEFAULT_CHATS = [
     {
       id: "c1",
