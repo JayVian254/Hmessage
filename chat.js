@@ -5,7 +5,7 @@
   const NON_REPLY_SENDERS = [
     "mpesa", "safaricom", "m-pesa", "m‑pesa", "lipa na m-pesa", "equity", "kcb",
     "co-operative bank", "airtel money", "tkash"
-  ]; // Case‑insensitive check
+  ];
 
   // ---------- DOM Elements ----------
   const backBtn = document.getElementById("backBtn");
@@ -17,8 +17,18 @@
   const messageInput = document.getElementById("messageInput");
   const sendBtn = document.getElementById("sendBtn");
 
+  // Message context elements
+  const contextBar = document.getElementById("messageContextBar");
+  const contextBackdrop = document.getElementById("contextBackdrop");
+  const deleteMessageBtn = document.getElementById("deleteMessageBtn");
+
   let currentChat = null;
   let chatId = null;
+  let selectedMessageIndex = -1;   // index of long‑pressed message
+
+  // ---------- Long‑press handling ----------
+  let longPressTimer = null;
+  let longPressedMessageEl = null;
 
   // ---------- Helpers ----------
   function getChats() {
@@ -55,9 +65,10 @@
       return;
     }
 
-    currentChat.messages.forEach(msg => {
+    currentChat.messages.forEach((msg, index) => {
       const row = document.createElement("div");
       row.className = `message-row ${msg.direction}`;
+      row.dataset.index = index;   // store index for later
 
       const bubble = document.createElement("div");
       bubble.className = "message-bubble";
@@ -84,11 +95,66 @@
       bubble.appendChild(text);
       bubble.appendChild(meta);
       row.appendChild(bubble);
+
+      // Attach long‑press listeners directly to the bubble
+      bubble.addEventListener("pointerdown", (e) => handleBubblePointerDown(e, index));
+      bubble.addEventListener("pointerup", clearLongPress);
+      bubble.addEventListener("pointerleave", clearLongPress);
+      bubble.addEventListener("pointercancel", clearLongPress);
+
       messageList.appendChild(row);
     });
 
     // Auto‑scroll to bottom
     messageList.scrollTop = messageList.scrollHeight;
+  }
+
+  function handleBubblePointerDown(e, index) {
+    e.stopPropagation();  // avoid any parent handlers
+    selectedMessageIndex = index;
+    longPressedMessageEl = e.currentTarget;
+
+    longPressTimer = setTimeout(() => {
+      navigator.vibrate?.(50);   // haptic feedback
+      openMessageContextBar();
+    }, 500);
+  }
+
+  function clearLongPress() {
+    clearTimeout(longPressTimer);
+    longPressTimer = null;
+    longPressedMessageEl = null;
+  }
+
+  function openMessageContextBar() {
+    contextBar.classList.add("active");
+    contextBackdrop.classList.add("visible");
+  }
+
+  function closeMessageContextBar() {
+    contextBar.classList.remove("active");
+    contextBackdrop.classList.remove("visible");
+    selectedMessageIndex = -1;
+    clearLongPress();
+  }
+
+  // ---------- Delete message ----------
+  function deleteSelectedMessage() {
+    if (selectedMessageIndex < 0 || !currentChat || !currentChat.messages) return;
+
+    // Remove the message at that index
+    currentChat.messages.splice(selectedMessageIndex, 1);
+
+    // Save
+    const chats = getChats();
+    const idx = chats.findIndex(c => c.id === currentChat.id);
+    if (idx !== -1) {
+      chats[idx] = currentChat;
+      saveChats(chats);
+    }
+
+    closeMessageContextBar();
+    renderMessages();
   }
 
   // ---------- Load chat ----------
@@ -138,11 +204,9 @@
       time
     };
 
-    // Ensure messages array exists
     if (!currentChat.messages) currentChat.messages = [];
     currentChat.messages.push(newMsg);
 
-    // Save
     const chats = getChats();
     const idx = chats.findIndex(c => c.id === currentChat.id);
     if (idx !== -1) {
@@ -168,10 +232,31 @@
     }
   });
 
-  // Auto‑resize textarea (optional)
+  // Auto‑resize textarea
   messageInput.addEventListener("input", () => {
     messageInput.style.height = "auto";
     messageInput.style.height = Math.min(messageInput.scrollHeight, 120) + "px";
+  });
+
+  // Context bar interactions
+  deleteMessageBtn.addEventListener("click", deleteSelectedMessage);
+  contextBackdrop.addEventListener("click", closeMessageContextBar);
+
+  // Close context bar on Escape
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      closeMessageContextBar();
+    }
+  });
+
+  // Prevent context bar from interfering with normal taps
+  messageList.addEventListener("click", (e) => {
+    // If context bar is open and user taps outside, close it
+    if (contextBar.classList.contains("active")) {
+      if (!e.target.closest(".message-context-bar")) {
+        closeMessageContextBar();
+      }
+    }
   });
 
   // ---------- Initialise ----------
