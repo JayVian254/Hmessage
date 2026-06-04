@@ -4,6 +4,7 @@
 
   const STORAGE_KEY = "fakeMessenger_chats";
 
+  // ---------- Organization helpers (same as app.js) ----------
   const ORGANIZATIONS = [
     "mpesa", "m-pesa", "safaricom", "airtel",
     "equity", "kcb", "co-operative bank",
@@ -11,9 +12,11 @@
   ];
 
   function isOrganization(name) {
-    return ORGANIZATIONS.some(org => name.toLowerCase().includes(org));
+    const lower = name.toLowerCase();
+    return ORGANIZATIONS.some(org => lower.includes(org));
   }
 
+  // Expanded color palette (more unique colors)
   const ORG_COLORS = [
     "#F4C430", "#4CAF50", "#FF9800", "#2196F3",
     "#9C27B0", "#E91E63", "#00BCD4", "#FF5722",
@@ -22,11 +25,13 @@
 
   function getOrgColor(name) {
     let hash = 0;
-    for (let i = 0; i < name.length; i++) hash += name.charCodeAt(i);
+    for (let i = 0; i < name.length; i++) {
+      hash += name.charCodeAt(i);
+    }
     return ORG_COLORS[hash % ORG_COLORS.length];
   }
 
-  // DOM elements
+  // ---------- DOM Elements ----------
   const backBtn = document.getElementById("backBtn");
   const chatNameEl = document.getElementById("chatName");
   const headerAvatar = document.getElementById("headerAvatar");
@@ -35,6 +40,8 @@
   const noReplyNotice = document.getElementById("noReplyNotice");
   const messageInput = document.getElementById("messageInput");
   const sendBtn = document.getElementById("sendBtn");
+
+  // Message context elements
   const contextBar = document.getElementById("messageContextBar");
   const contextBackdrop = document.getElementById("contextBackdrop");
   const deleteMessageBtn = document.getElementById("deleteMessageBtn");
@@ -42,37 +49,32 @@
   let currentChat = null;
   let chatId = null;
   let selectedMessageIndex = -1;
+
+  // Long‑press handling
   let longPressTimer = null;
   let ignoreNextClick = false;
 
+  // ---------- Helpers ----------
   function getChats() {
-    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; } catch (e) { return []; }
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      return [];
+    }
   }
 
-  function saveChats(chats) { localStorage.setItem(STORAGE_KEY, JSON.stringify(chats)); }
-
-  // ---------- Mark all messages as read ----------
-  function markMessagesRead() {
-    if (!currentChat || !currentChat.messages) return;
-    let changed = false;
-    currentChat.messages.forEach(msg => {
-      if (msg.direction === "incoming" && msg.state !== "read") {
-        msg.state = "read";
-        changed = true;
-      }
-    });
-    if (!changed) return;
-    const chats = getChats();
-    const idx = chats.findIndex(c => c.id === currentChat.id);
-    if (idx !== -1) { chats[idx] = currentChat; saveChats(chats); }
+  function saveChats(chats) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(chats));
   }
 
   // ---------- Render messages ----------
   function renderMessages() {
     if (!currentChat) return;
     messageList.innerHTML = "";
+
     if (!currentChat.messages || currentChat.messages.length === 0) {
-      messageList.innerHTML = '<div class="empty-chat">No messages yet</div>';
+      messageList.innerHTML = `<div class="empty-chat">No messages yet</div>`;
       return;
     }
 
@@ -90,15 +92,24 @@
 
       const meta = document.createElement("div");
       meta.className = "message-meta";
-      meta.innerHTML = `<span class="message-time">${msg.time}</span>`;
+
+      const timeSpan = document.createElement("span");
+      timeSpan.className = "message-time";
+      timeSpan.textContent = msg.time;
+
+      meta.appendChild(timeSpan);
+
       if (msg.direction === "outgoing") {
-        meta.innerHTML += `<span class="message-state state-${msg.state || 'sent'}"></span>`;
+        const stateSpan = document.createElement("span");
+        stateSpan.className = `message-state state-${msg.state || "sent"}`;
+        meta.appendChild(stateSpan);
       }
 
       bubble.appendChild(text);
       bubble.appendChild(meta);
       row.appendChild(bubble);
 
+      // Long‑press listeners
       bubble.addEventListener("pointerdown", (e) => {
         e.stopPropagation();
         selectedMessageIndex = index;
@@ -118,7 +129,10 @@
     messageList.scrollTop = messageList.scrollHeight;
   }
 
-  function clearLongPress() { clearTimeout(longPressTimer); longPressTimer = null; }
+  function clearLongPress() {
+    clearTimeout(longPressTimer);
+    longPressTimer = null;
+  }
 
   function openMessageContextBar() {
     ignoreNextClick = true;
@@ -134,12 +148,18 @@
     ignoreNextClick = false;
   }
 
+  // ---------- Delete message ----------
   function deleteSelectedMessage() {
     if (selectedMessageIndex < 0 || !currentChat || !currentChat.messages) return;
     currentChat.messages.splice(selectedMessageIndex, 1);
+
     const chats = getChats();
     const idx = chats.findIndex(c => c.id === currentChat.id);
-    if (idx !== -1) { chats[idx] = currentChat; saveChats(chats); }
+    if (idx !== -1) {
+      chats[idx] = currentChat;
+      saveChats(chats);
+    }
+
     closeMessageContextBar();
     renderMessages();
   }
@@ -148,14 +168,22 @@
   function loadChat() {
     const params = new URLSearchParams(window.location.search);
     chatId = params.get("id");
-    if (!chatId) { window.location.href = "index.html"; return; }
+    if (!chatId) {
+      window.location.href = "index.html";
+      return;
+    }
 
     const chats = getChats();
     currentChat = chats.find(c => c.id === chatId);
-    if (!currentChat) { window.location.href = "index.html"; return; }
+    if (!currentChat) {
+      window.location.href = "index.html";
+      return;
+    }
 
+    // Header
     chatNameEl.textContent = currentChat.name;
 
+    // Avatar: organization icon or first letter
     const isOrg = isOrganization(currentChat.name);
     if (isOrg) {
       headerAvatar.innerHTML = '<span class="org-icon">👤</span>';
@@ -164,9 +192,10 @@
     } else {
       headerAvatar.textContent = currentChat.name.charAt(0).toUpperCase();
       headerAvatar.classList.remove("organization");
-      headerAvatar.style.background = "";
+      headerAvatar.style.background = ""; // reset to CSS default
     }
 
+    // Footer: reply box or non-reply notice
     if (isOrg) {
       replyBox.style.display = "none";
       noReplyNotice.style.display = "block";
@@ -175,35 +204,52 @@
       noReplyNotice.style.display = "none";
     }
 
-    markMessagesRead();       // clear unread counter
     renderMessages();
   }
 
+  // ---------- Send message ----------
   function sendMessage() {
     const text = messageInput.value.trim();
     if (!text || !currentChat) return;
+
     const now = new Date();
     const time = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 
+    const newMsg = {
+      text,
+      direction: "outgoing",
+      state: "sent",
+      time
+    };
+
     if (!currentChat.messages) currentChat.messages = [];
-    currentChat.messages.push({
-      text, direction: "outgoing", state: "sent", time
-    });
+    currentChat.messages.push(newMsg);
 
     const chats = getChats();
     const idx = chats.findIndex(c => c.id === currentChat.id);
-    if (idx !== -1) { chats[idx] = currentChat; saveChats(chats); }
+    if (idx !== -1) {
+      chats[idx] = currentChat;
+      saveChats(chats);
+    }
 
     messageInput.value = "";
     renderMessages();
   }
 
-  // Events
-  backBtn.addEventListener("click", () => { window.location.href = "index.html"; });
-  sendBtn.addEventListener("click", sendMessage);
-  messageInput.addEventListener("keydown", (e) => {
-    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+  // ---------- Event listeners ----------
+  backBtn.addEventListener("click", () => {
+    window.location.href = "index.html";
   });
+
+  sendBtn.addEventListener("click", sendMessage);
+
+  messageInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  });
+
   messageInput.addEventListener("input", () => {
     messageInput.style.height = "auto";
     messageInput.style.height = Math.min(messageInput.scrollHeight, 120) + "px";
@@ -211,13 +257,20 @@
 
   deleteMessageBtn.addEventListener("click", deleteSelectedMessage);
   contextBackdrop.addEventListener("click", closeMessageContextBar);
-  document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeMessageContextBar(); });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeMessageContextBar();
+  });
 
   messageList.addEventListener("click", (e) => {
     if (!contextBar.classList.contains("active")) return;
-    if (ignoreNextClick) { ignoreNextClick = false; return; }
+    if (ignoreNextClick) {
+      ignoreNextClick = false;
+      return;
+    }
     if (!e.target.closest(".message-context-bar")) closeMessageContextBar();
   });
 
+  // ---------- Initialise ----------
   loadChat();
 })();
