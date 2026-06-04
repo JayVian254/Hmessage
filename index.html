@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <meta name="description" content="Fake Messenger – a sleek and accessible chat interface" />
   <meta name="theme-color" content="#0084ff" />
   <title>Fake Messenger</title>
@@ -13,6 +13,7 @@
 
   <div class="app">
 
+    <!-- HEADER with hamburger, title, and more button (no search button) -->
     <header class="topbar" role="banner">
       <button class="hamburger" id="hamburgerBtn" aria-label="Open menu">
         <span aria-hidden="true">☰</span>
@@ -25,6 +26,7 @@
       </nav>
     </header>
 
+    <!-- Side drawer (hidden by default) -->
     <aside class="side-drawer" id="sideDrawer">
       <div class="drawer-content">
         <h2 class="drawer-title">Menu</h2>
@@ -36,15 +38,18 @@
     <div class="drawer-backdrop" id="drawerBackdrop"></div>
     <div class="context-backdrop" id="contextBackdrop"></div>
 
-<div class="context-menu" id="contextMenu">
-  <button id="pinChatBtn">📌 Pin</button>
-  <button id="markUnreadBtn">✉️ Mark unread</button>
-  <button id="muteChatBtn">🔕 Mute</button>
-  <button id="archiveChatBtn">🗃️ Archive</button>
-  <button id="deleteChatBtn">🗑️ Delete</button>
-</div>
+    <div class="context-menu" id="contextMenu">
+      <button id="pinChatBtn">📌 Pin</button>
+      <button id="markUnreadBtn">✉️ Mark unread</button>
+      <button id="muteChatBtn">🔕 Mute</button>
+      <button id="archiveChatBtn">🗃️ Archive</button>
+      <button id="deleteChatBtn">🗑️ Delete</button>
+    </div>
 
+    <!-- Main content area -->
     <main id="main-content">
+
+      <!-- Search bar (no extra button, just input) -->
       <form class="search-box" role="search" aria-label="Search chats">
         <input 
           type="search" 
@@ -56,15 +61,19 @@
         />
       </form>
 
+      <!-- Chat list -->
       <section aria-labelledby="app-title">
         <ul class="chat-list" id="chatList" aria-label="Chat conversations"></ul>
       </section>
+
     </main>
 
+    <!-- Floating Action Button -->
     <button class="fab" id="addContactBtn" aria-label="Add new contact" title="Add contact">
       <span aria-hidden="true">+</span>
     </button>
 
+    <!-- Add Contact Modal (hidden by default) -->
     <div class="modal-overlay" id="addModal">
       <div class="modal-content">
         <h3>New Contact</h3>
