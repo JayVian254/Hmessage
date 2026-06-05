@@ -3,17 +3,19 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="theme-color" content="#0f0f0f" />
   <meta name="description" content="Fake Messenger – a sleek and accessible chat interface" />
-  <meta name="theme-color" content="#0084ff" />
   <title>Fake Messenger</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💬</text></svg>" />
+  <link rel="manifest" href="manifest.json" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-
   <div class="app">
 
-    <!-- HEADER with hamburger, title, and more button (no search button) -->
     <header class="topbar" role="banner">
       <button class="hamburger" id="hamburgerBtn" aria-label="Open menu">
         <span aria-hidden="true">☰</span>
@@ -26,7 +28,6 @@
       </nav>
     </header>
 
-    <!-- Side drawer (hidden by default) -->
     <aside class="side-drawer" id="sideDrawer">
       <div class="drawer-content">
         <h2 class="drawer-title">Menu</h2>
@@ -46,10 +47,7 @@
       <button id="deleteChatBtn">🗑️ Delete</button>
     </div>
 
-    <!-- Main content area -->
     <main id="main-content">
-
-      <!-- Search bar (no extra button, just input) -->
       <form class="search-box" role="search" aria-label="Search chats">
         <input 
           type="search" 
@@ -61,19 +59,15 @@
         />
       </form>
 
-      <!-- Chat list -->
       <section aria-labelledby="app-title">
         <ul class="chat-list" id="chatList" aria-label="Chat conversations"></ul>
       </section>
-
     </main>
 
-    <!-- Floating Action Button -->
     <button class="fab" id="addContactBtn" aria-label="Add new contact" title="Add contact">
       <span aria-hidden="true">+</span>
     </button>
 
-    <!-- Add Contact Modal (hidden by default) -->
     <div class="modal-overlay" id="addModal">
       <div class="modal-content">
         <h3>New Contact</h3>
