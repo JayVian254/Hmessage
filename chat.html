@@ -9,21 +9,13 @@
 </head>
 <body>
   <div class="chat-app">
-
-    <!-- Sticky header group (status bar + chat header) -->
-    <div class="app-header">
-      <div class="status-bar">
-        <span class="status-time">9:41</span>
-        <span class="status-icons">📶 🔋</span>
+    <header class="chat-header">
+      <button id="backBtn" aria-label="Back to chats">←</button>
+      <div class="header-info">
+        <div class="header-avatar" id="headerAvatar"></div>
+        <h2 id="chatName">Contact</h2>
       </div>
-      <header class="chat-header">
-        <button id="backBtn" aria-label="Back to chats">←</button>
-        <div class="header-info">
-          <div class="header-avatar" id="headerAvatar"></div>
-          <h2 id="chatName">Contact</h2>
-        </div>
-      </header>
-    </div>
+    </header>
 
     <main class="message-list" id="messageList"></main>
 
