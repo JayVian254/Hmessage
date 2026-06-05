@@ -22,6 +22,7 @@
   --radius-md: 16px;
   --radius-lg: 20px;
   --font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --msg-font-size: 0.95rem;   /* default message text size */
 }
 
 html, body {
@@ -54,15 +55,14 @@ body {
   display: flex;
   align-items: center;
 
-  padding-top: calc(env(safe-area-inset-top, 0px) + 12px);
+  padding-top: calc(env(safe-area-inset-top, 0px) + 20px);
   padding-right: 16px;
   padding-bottom: 12px;
   padding-left: 16px;
 
-  background: rgba(255,255,255,0.02);
+  background: #121212;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-
   border-bottom: 1px solid var(--border-color);
 
   z-index: 10;
@@ -84,9 +84,7 @@ body {
   justify-content: center;
   transition: background 0.15s;
 }
-#backBtn:hover {
-  background: rgba(255,255,255,0.08);
-}
+#backBtn:hover { background: rgba(255,255,255,0.08); }
 
 .header-info {
   display: flex;
@@ -110,14 +108,12 @@ body {
 
 /* Organization avatar in header */
 .header-avatar.organization {
-  background: #2196F3;  /* fallback, overridden inline */
+  background: #2196F3;
   font-size: 20px;
   font-weight: normal;
 }
 
-.org-icon {
-  font-size: 22px;
-}
+.org-icon { font-size: 22px; }
 
 #chatName {
   font-size: 1.2rem;
@@ -127,6 +123,24 @@ body {
   text-overflow: ellipsis;
 }
 
+/* --- Three‑dot button in header --- */
+.chat-more-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+.chat-more-btn:hover { background: rgba(255, 255, 255, 0.08); }
+.chat-more-btn:active { background: rgba(255, 255, 255, 0.15); }
+
 /* --- Messages --- */
 .message-list {
   flex: 1;
@@ -135,6 +149,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 4px;
+  touch-action: pan-y pinch-zoom;   /* allow pinch on this container */
 }
 
 .message-row {
@@ -142,13 +157,8 @@ body {
   margin-bottom: 8px;
 }
 
-.message-row.incoming {
-  justify-content: flex-start;
-}
-
-.message-row.outgoing {
-  justify-content: flex-end;
-}
+.message-row.incoming { justify-content: flex-start; }
+.message-row.outgoing { justify-content: flex-end; }
 
 .message-bubble {
   max-width: 80%;
@@ -172,8 +182,9 @@ body {
   color: #fff;
 }
 
+/* The actual text uses the variable font size */
 .message-text {
-  font-size: 0.95rem;
+  font-size: var(--msg-font-size);
   line-height: 1.4;
 }
 
@@ -187,31 +198,14 @@ body {
   color: rgba(255,255,255,0.7);
 }
 
-.message-time {
-  margin-right: 2px;
-}
+.message-time { margin-right: 2px; }
+.message-state { font-size: 0.75rem; }
 
-.message-state {
-  font-size: 0.75rem;
-}
+.state-sent::after { content: "✓"; }
+.state-delivered::after { content: "✓✓"; }
+.state-read::after { content: "✓✓"; color: #34b7f1; }
 
-.state-sent::after {
-  content: "✓";
-}
-.state-delivered::after {
-  content: "✓✓";
-}
-.state-read::after {
-  content: "✓✓";
-  color: #34b7f1;
-}
-
-/* Empty / loading */
-.empty-chat {
-  text-align: center;
-  color: var(--text-muted);
-  margin-top: 40px;
-}
+.empty-chat { text-align: center; color: var(--text-muted); margin-top: 40px; }
 
 /* --- Reply box --- */
 .reply-box {
@@ -258,13 +252,8 @@ body {
   transition: transform 0.15s, background 0.15s;
   flex-shrink: 0;
 }
-#sendBtn:hover {
-  background: #1a8dff;
-  transform: scale(1.05);
-}
-#sendBtn:active {
-  transform: scale(0.95);
-}
+#sendBtn:hover { background: #1a8dff; transform: scale(1.05); }
+#sendBtn:active { transform: scale(0.95); }
 
 /* --- No-reply notice --- */
 .no-reply {
@@ -282,8 +271,7 @@ body {
 .message-context-bar {
   position: fixed;
   bottom: -100px;
-  left: 0;
-  right: 0;
+  left: 0; right: 0;
   max-width: 480px;
   margin: 0 auto;
   background: #1d1d1d;
@@ -295,11 +283,7 @@ body {
   z-index: 70;
   transition: bottom 0.25s ease;
 }
-
-.message-context-bar.active {
-  bottom: 0;
-}
-
+.message-context-bar.active { bottom: 0; }
 .message-context-bar button {
   background: rgba(255,255,255,0.06);
   border: none;
@@ -310,9 +294,7 @@ body {
   font-size: 15px;
   cursor: pointer;
 }
-.message-context-bar button:hover {
-  background: rgba(255,255,255,0.12);
-}
+.message-context-bar button:hover { background: rgba(255,255,255,0.12); }
 
 /* Backdrop for context bar */
 .context-backdrop {
@@ -324,27 +306,15 @@ body {
   pointer-events: none;
   transition: opacity 0.2s;
 }
-.context-backdrop.visible {
-  opacity: 1;
-  pointer-events: auto;
-}
+.context-backdrop.visible { opacity: 1; pointer-events: auto; }
 
 /* ========== Focus ========== */
 #backBtn:focus-visible,
 #sendBtn:focus-visible,
-textarea:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-}
+.chat-more-btn:focus-visible,
+textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 /* ========== Scrollbar ========== */
-.message-list::-webkit-scrollbar {
-  width: 4px;
-}
-.message-list::-webkit-scrollbar-track {
-  background: transparent;
-}
-.message-list::-webkit-scrollbar-thumb {
-  background: rgba(255,255,255,0.15);
-  border-radius: 4px;
-}
+.message-list::-webkit-scrollbar { width: 4px; }
+.message-list::-webkit-scrollbar-track { background: transparent; }
+.message-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 4px; }
